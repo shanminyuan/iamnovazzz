@@ -1,0 +1,66 @@
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#82afe0;font-family:Arial,Helvetica,sans-serif}
+main{height:100%;display:grid;place-items:center;position:relative;isolation:isolate}
+.sky{position:absolute;inset:0;z-index:-1;background:url('assets/1-82.png') center/cover}
+.scene{position:absolute;width:816px;height:974px;flex-shrink:0;transform:scale(var(--scale,.65));perspective:2000px;perspective-origin:50% 50%;transform-style:preserve-3d;--motion-duration:1200ms;--motion-easing:cubic-bezier(.38,0,.2,1)}
+/* The base and both faces of the lid travel together around one hinge. */
+.composition{position:absolute;inset:0;transform-origin:50% 715px;transform:translate3d(0,-222px,0) scale(.98,.935);transform-style:preserve-3d;transition:transform var(--motion-duration) var(--motion-easing)}
+.half{position:absolute;background:url('assets/tin-open-v2.png') 0 0/816px 974px no-repeat}
+.lower{inset:0;z-index:1;clip-path:path('M162 480 H657 C731 480 779 535 779 608 V822 C779 896 730 949 657 949 H162 C88 949 35 896 35 822 V608 C35 535 88 480 162 480 Z');opacity:0;transition:opacity 140ms ease 1060ms}
+.tin-top{position:absolute;left:38px;top:32px;width:741px;height:451px;z-index:2;transform-origin:50% 100%;transform:rotateX(-180deg);transform-style:preserve-3d;transition:transform var(--motion-duration) var(--motion-easing)}
+.upper{left:-38px;top:-32px;width:816px;height:974px;clip-path:path('M162 32 H657 C730 32 779 90 779 164 V354 C779 428 731 483 657 483 H162 C88 483 38 428 38 354 V164 C38 90 88 32 162 32 Z');backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.lid{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;padding:0;cursor:pointer;transform:rotateX(180deg);transform-origin:50% 50%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.lid svg{display:block;width:100%;height:100%;pointer-events:none}
+.scene.open .composition{transform:translate3d(0,0,0) scale(1)}
+.scene.open .tin-top{transform:rotateX(0)}
+.scene.open .lower{opacity:1;transition-delay:0ms}
+.scene.open .lid{pointer-events:none}
+.scene.is-animating .composition,.scene.is-animating .tin-top{will-change:transform}
+.scene.no-motion .composition,.scene.no-motion .tin-top,.scene.no-motion .lower{transition:none!important}
+.toggle{z-index:5;position:fixed;bottom:max(12px,env(safe-area-inset-bottom));right:18px;min-height:42px;border:1px solid #fffb;background:#ffffffa0;backdrop-filter:blur(12px);color:#254368;padding:10px 17px;border-radius:30px;font-size:12px;letter-spacing:1px;cursor:pointer;transition:background .2s}
+.toggle:hover{background:#ffffffe0}.toggle span{margin-left:10px}
+.lid:focus-visible,.toggle:focus-visible{outline:2px solid #244a6c;outline-offset:5px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;transition-delay:0s!important}}
+/* Contour-clipped copies preserve the reference composition and make each item interactive. */
+.hotspots{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .3s}.scene.open.is-settled .hotspots{opacity:1;transition-delay:0s}.item-link{position:absolute;padding:0;border:0;background:none;pointer-events:none;cursor:pointer;transform-origin:center;outline:none;isolation:isolate;transition:transform .28s cubic-bezier(.2,.8,.2,1),filter .28s;filter:drop-shadow(0 0 0 transparent)}.item-link svg{width:100%;height:100%;display:block;overflow:visible;opacity:0;transition:opacity .22s}.scene.open.is-settled .item-link svg image{pointer-events:visiblePainted}.item-link:hover,.item-link:focus-visible,.item-link.clicked{z-index:3;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 7px #ffffffb3);transform:translateY(-3px) rotate(-.65deg) scale(1.012)}.item-portfolio:hover,.item-portfolio:focus-visible{transform:translateY(-3px) rotate(.6deg) scale(1.012)}.item-link:hover svg,.item-link:focus-visible svg,.item-link.clicked svg{opacity:1}.item-link:active{transform:translateY(-1px) scale(.99);filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px #ffffffc0)}.item-label{position:absolute;left:50%;bottom:100%;white-space:nowrap;padding:9px 15px;border-radius:22px;background:#fffffff0;color:#3d5367;font:16px Georgia,serif;box-shadow:0 3px 14px #21406424;opacity:0;transform:translate(-50%,5px);transition:opacity .2s,transform .2s;pointer-events:none;filter:none}.item-link:hover .item-label,.item-link:focus-visible .item-label,.item-link.clicked .item-label{opacity:1;transform:translate(-50%,-9px)}.item-contact .item-label{left:45%}@media(prefers-reduced-motion:reduce){.item-link:hover,.item-link:focus-visible,.item-link:active{transform:none!important}.item-link{transition:none!important}}
+
+/* One soft, staggered reflection after the lid has finished opening. */
+.glint-sheen{opacity:0;pointer-events:none;transform-box:fill-box;transform-origin:center}
+.scene.open.is-settled .item-link.reveal-glint svg:not(.object-base){animation:treasure-glint 1050ms ease-in-out var(--glint-delay,0ms) 1 both}
+.scene.open.is-settled .reveal-glint .glint-sheen{animation:treasure-sheen 1050ms ease-in-out var(--glint-delay,0ms) 1 both}
+@keyframes treasure-glint{
+ 0%,100%{opacity:0;filter:brightness(1) drop-shadow(0 0 0 #ffffff00)}
+ 18%{opacity:.6;filter:brightness(1.04) drop-shadow(0 0 3px #ffffff70)}
+ 40%{opacity:1;filter:brightness(1.12) drop-shadow(0 0 3px #fff) drop-shadow(0 0 11px #ffffffc0)}
+ 72%{opacity:.65;filter:brightness(1.04) drop-shadow(0 0 6px #ffffff70)}
+}
+@keyframes treasure-sheen{
+ 0%,12%{opacity:0;transform:translateX(-120%) skewX(-16deg)}
+ 38%,58%{opacity:.7}
+ 88%,100%{opacity:0;transform:translateX(120%) skewX(-16deg)}
+}
+@media(prefers-reduced-motion:reduce){.reveal-glint svg,.reveal-glint .glint-sheen{animation:none!important}}
+
+/* Stable cutouts and clean backgrounds let these objects lift as a single layer. */
+.layered-object > svg{position:absolute;inset:0;z-index:1}
+.item-link svg.object-base{z-index:0;opacity:1;transition:none;animation:none}
+.item-link svg.object-base image{pointer-events:none!important}
+.object-underlay{position:absolute;display:block;overflow:visible;opacity:0;pointer-events:none}
+.scene.open.is-settled.cutouts-ready .object-underlay{opacity:1}
+.scene:not(.cutouts-ready) .item-link:is(.item-experience,.item-reading):is(:hover,:focus-visible,.clicked,:active){transform:none}
+
+/* A flat resting cover avoids nested 180-degree backfaces in mobile WebViews. */
+main{height:100%;height:100svh}
+.closed-cover{
+ position:absolute;left:50%;top:50%;z-index:4;
+ width:min(89vw,74.56vh);width:min(89vw,74.56svh);
+ aspect-ratio:726.18 / 421.685;
+ padding:0;border:0;background:transparent;cursor:pointer;
+ transform:translate(-50%,-50%);-webkit-tap-highlight-color:transparent;
+}
+.closed-cover svg{display:block;width:100%;height:100%;pointer-events:none}
+.closed-cover:focus-visible{outline:2px solid #244a6c;outline-offset:5px;border-radius:16%}
+.scene:not(.open):not(.is-animating) .composition{visibility:hidden}
+.scene.open ~ .closed-cover,.scene.is-animating ~ .closed-cover{visibility:hidden;pointer-events:none}

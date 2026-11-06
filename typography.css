@@ -1,0 +1,8 @@
+/* One font family, with a clear distinction between headings and reading text. */
+:root{--site-font:Arial,Helvetica,sans-serif}
+body,body *,body ::before,body ::after{font-family:var(--site-font)!important;font-style:normal!important}
+body{font-weight:400!important}
+h1,h2,h3,.wordmark,strong,.lead{font-weight:700!important}
+.return-link,.visit,.toggle,.item-label,.difficulty-score{font-weight:600!important}
+.summary,.description,.scenario p,.author,.dates,.preview-caption,.interests-heading p,.gallery-footer,.reflection-copy,.project-takeaway p{font-weight:400!important}
+.page-contact .contact-item h2{font-weight:400!important}

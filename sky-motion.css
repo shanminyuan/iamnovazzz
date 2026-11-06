@@ -1,0 +1,20 @@
+/* Legacy selectors also cover a page opened before the persistent navigation update. */
+.sky,body.inner-page::before,.site-sky{
+ inset:-6vh -10vw;
+ background:#82afe0 url('assets/1-82.png') center/cover no-repeat;
+ pointer-events:none;
+ transform:translate3d(-5vw,1vh,0);
+ animation:sky-drift 19s ease-in-out -6s infinite alternate;
+ will-change:transform;
+}
+.site-sky{position:fixed;z-index:-1}
+html.persistent-sky{background:#82afe0!important}
+.persistent-sky body{background:transparent!important;isolation:isolate}
+.persistent-sky .sky,.persistent-sky body.inner-page::before{display:none!important}
+@keyframes sky-drift{
+ from{transform:translate3d(-5vw,1vh,0)}
+ to{transform:translate3d(5vw,-1vh,0)}
+}
+@media(prefers-reduced-motion:reduce){
+ .sky,body.inner-page::before,.site-sky{animation:none;transform:none;will-change:auto}
+}
