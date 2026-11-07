@@ -6,3 +6,7 @@ h1,h2,h3,.wordmark,strong,.lead{font-weight:700!important}
 .return-link,.visit,.toggle,.item-label,.difficulty-score{font-weight:600!important}
 .summary,.description,.scenario p,.author,.dates,.preview-caption,.interests-heading p,.gallery-footer,.reflection-copy,.project-takeaway p{font-weight:400!important}
 .page-contact .contact-item h2{font-weight:400!important}
+
+/* iOS must not highlight an SVG image's full, unclipped bitmap when tapped. */
+a,button,svg,image{-webkit-tap-highlight-color:transparent}
+a,button{touch-action:manipulation}

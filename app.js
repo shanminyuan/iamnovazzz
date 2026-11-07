@@ -1,6 +1,8 @@
 (window.NovaPage.register||((_name,initialize)=>initialize()))('app',()=>{
 const pageEvents=new AbortController();
 const scene=document.getElementById('scene');
+const homeMain=scene.closest('main');
+let pageActive=true;
 const lid=document.getElementById('lid');
 const closedCover=document.getElementById('closed-cover');
 const topPanel=document.getElementById('tin-top');
@@ -68,8 +70,9 @@ const assetsReady=Promise.all([cleanPlateReady,...['assets/tin-open-v2.png','ass
  const image=new Image();image.src=src;return image.decode().catch(()=>{});
 })]);
 function resize(){
+ if(!pageActive||!scene.isConnected)return;
  const width=document.documentElement.clientWidth||innerWidth;
- const height=document.querySelector('main').clientHeight||innerHeight;
+ const height=homeMain.clientHeight||innerHeight;
  if(width>0&&height>0)document.documentElement.style.setProperty('--scale',Math.min(width/816,height/974));
 }
 function finishMotion(){
@@ -83,7 +86,7 @@ async function setOpen(value,{immediate=false}={}){
  clearTreasureGlow();opened=value;clearTimeout(settleTimer);
  hotspots.inert=true;scene.classList.remove('is-settled');
  lid.setAttribute('aria-expanded',String(opened));lid.tabIndex=opened?-1:0;
- closedCover.setAttribute('aria-expanded',String(opened));closedCover.tabIndex=opened?-1:0;
+ closedCover.setAttribute('aria-expanded',String(opened));closedCover.tabIndex=opened?-1:0;closedCover.hidden=opened;
  toggle.setAttribute('aria-expanded',String(opened));
  toggle.innerHTML=opened?'Close the tin <span>↙</span>':'Tap to open my little world <span>↗</span>';
  hint.textContent=opened?'The tin is opening':'The tin is closing';
@@ -93,6 +96,7 @@ async function setOpen(value,{immediate=false}={}){
  if(immediate)scene.classList.add('no-motion');
  if(changed&&!immediate)scene.classList.add('is-animating');
  scene.classList.toggle('open',opened);
+ document.documentElement.removeAttribute('data-nova-tin-open');
  if(immediate||(!changed&&!scene.classList.contains('is-animating'))){
   finishMotion();requestAnimationFrame(()=>requestAnimationFrame(()=>scene.classList.remove('no-motion')));
  }else{
@@ -104,17 +108,20 @@ topPanel.addEventListener('transitionend',event=>{if(event.target===topPanel&&ev
 lid.addEventListener('click',()=>setOpen(true));
 closedCover.addEventListener('click',()=>setOpen(true));
 toggle.addEventListener('click',()=>setOpen(!opened));
-addEventListener('keydown',event=>{if(event.key==='Escape'){setOpen(false);toggle.focus();}},{signal:pageEvents.signal});
-reducedMotion.addEventListener('change',()=>setOpen(opened,{immediate:true}),{signal:pageEvents.signal});
+addEventListener('keydown',event=>{if(pageActive&&event.key==='Escape'){setOpen(false);toggle.focus();}},{signal:pageEvents.signal});
+reducedMotion.addEventListener('change',()=>{if(pageActive)setOpen(opened,{immediate:true});},{signal:pageEvents.signal});
 addEventListener('resize',resize,{signal:pageEvents.signal});
 addEventListener('pageshow',resize,{signal:pageEvents.signal});
 window.visualViewport?.addEventListener('resize',resize,{signal:pageEvents.signal});
-const sceneSizeObserver=new ResizeObserver(resize);sceneSizeObserver.observe(document.querySelector('main'));resize();
+const sceneSizeObserver=new ResizeObserver(resize);sceneSizeObserver.observe(homeMain);resize();
 setOpen(new URLSearchParams(location.search).get('open')==='1',{immediate:true});
 const destinationUrls={experience:'experience.html',portfolio:'portfolio.html',reading:'books.html',contact:'contact.html',interests:'interests.html'};
 document.querySelectorAll('.item-link').forEach(button=>{
- button.addEventListener('click',()=>{const url=destinationUrls[button.dataset.destination];if(url)(window.NovaNavigate?window.NovaNavigate(url):location.assign(url));});
+ button.addEventListener('click',event=>{const url=destinationUrls[button.dataset.destination];if(url)(window.NovaNavigate?window.NovaNavigate(url,{focus:event.detail===0}):location.assign(url));});
 });
+
+window.NovaPage.onSuspend(()=>{pageActive=false;sceneSizeObserver.disconnect();clearTreasureGlow();});
+window.NovaPage.onResume(url=>{pageActive=true;sceneSizeObserver.observe(homeMain);resize();if(url.searchParams.get('open')==='1'&&!opened)setOpen(true,{immediate:true});});
 
 window.NovaPage.onCleanup(()=>{sceneSizeObserver.disconnect();pageEvents.abort();++request;clearTimeout(settleTimer);clearTreasureGlow();});
 
