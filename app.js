@@ -127,6 +127,11 @@ addEventListener('keydown',event=>{if(event.key==='Escape'){setOpen(false);toggl
 reducedMotion.addEventListener('change',()=>setOpen(opened,{immediate:true}),{signal:pageEvents.signal});
 addEventListener('resize',resize,{signal:pageEvents.signal});
 addEventListener('pageshow',resize,{signal:pageEvents.signal});
+addEventListener('nova:suspend',clearTreasureGlow,{signal:pageEvents.signal});
+addEventListener('nova:resume',event=>{
+ if(!opened&&new URL(event.detail.url).searchParams.get('open')==='1')setOpen(true,{immediate:true});
+ resize();
+},{signal:pageEvents.signal});
 window.visualViewport?.addEventListener('resize',resize,{signal:pageEvents.signal});
 const sceneSizeObserver=new ResizeObserver(resize);sceneSizeObserver.observe(document.querySelector('main'));resize();
 setOpen(new URLSearchParams(location.search).get('open')==='1',{immediate:true});

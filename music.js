@@ -1,6 +1,6 @@
 (() => {
  'use strict';
- if(document.getElementById('site-background-music'))return;
+ if(document.documentElement.classList.contains('nova-embedded')||document.getElementById('site-background-music'))return;
  const progressKey='nova-background-music-v1';
  const read=(storage,key,fallback)=>{try{return storage.getItem(key)??fallback;}catch{return fallback;}};
  const write=(storage,key,value)=>{try{storage.setItem(key,value);}catch{}};
@@ -50,6 +50,7 @@
  audio.addEventListener('loadedmetadata',restore);
  audio.addEventListener('playing',render);audio.addEventListener('pause',render);
  audio.addEventListener('error',()=>{pending=false;render();});audio.addEventListener('timeupdate',save);
+ addEventListener('nova:audio-gesture',()=>play(true));
  addEventListener('pagehide',save);
  addEventListener('pageshow',event=>{if(event.persisted&&!optedOut)play();});
  render();if(!document.hidden)play();

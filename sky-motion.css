@@ -27,3 +27,13 @@ body[aria-busy="true"]{cursor:progress}
  .site-music{min-height:46px;min-width:46px}
  .site-music:hover{transform:none}
 }
+
+/* Touch navigation keeps separate, fully styled page surfaces alive. */
+.nova-panel{position:fixed;inset:0;width:100%;height:100%;height:100svh;border:0;background:transparent;z-index:20;opacity:0;visibility:hidden;pointer-events:none;transition:opacity 180ms ease,visibility 0s 180ms;color-scheme:light}
+.nova-panel.nova-panel-current{opacity:1;visibility:visible;pointer-events:auto;transition-delay:0s}
+.nova-panel-host .nova-base{transition:opacity 180ms ease;opacity:1}
+.nova-panel-host .nova-base-away{opacity:0;pointer-events:none}
+html.nova-embedded,html.nova-embedded body{background:transparent!important;zoom:1!important}
+.nova-embedded .sky,.nova-embedded body.inner-page::before{display:none!important}
+.nova-embedded body{isolation:isolate}
+@media(prefers-reduced-motion:reduce){.nova-panel,.nova-panel-host .nova-base{transition:none!important}}

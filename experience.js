@@ -67,7 +67,7 @@ const resizeObserver=new ResizeObserver(measure);resizeObserver.observe(viewport
 let animationFrame=0;
 function animate(now){
  const delta=Math.min(now-(lastFrame||now),64);lastFrame=now;
- const canScroll=!userPaused&&!dragging&&!touching&&!document.hidden&&now>manualUntil&&period;
+ const canScroll=!userPaused&&!dragging&&!touching&&!document.hidden&&window.NovaPage.active!==false&&now>manualUntil&&period;
  if(canScroll){
   // Keep subpixel progress outside scrollLeft so zoom and fast displays cannot round each step away.
   if(!autoScrolling)autoPosition=viewport.scrollLeft;
