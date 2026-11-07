@@ -1,0 +1,18 @@
+/* Permanent, contour-aligned discovery hints for touch layouts. */
+.scene .touch-entry-labels{display:none}
+.scene.touch-layout .touch-entry-labels{display:block;position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;visibility:hidden}
+.scene.touch-layout.open.is-settled .touch-entry-labels{opacity:1;visibility:visible}
+.scene.touch-layout .touch-entry-tag{position:absolute;left:var(--entry-x);top:var(--entry-y);transform:translate(-50%,-50%) scale(var(--entry-inverse,1));transform-origin:center;display:inline-flex;align-items:center;justify-content:center;gap:1.5px;width:max-content;min-height:15px;padding:2px 4px;margin:0;border:1px solid #fffffff0;border-radius:999px;background:linear-gradient(170deg,#fffffff2,#edf5ffb8 60%,#ffffffde);color:#254e77;font:600 8px/1.2 Arial,sans-serif;letter-spacing:0;white-space:nowrap;box-shadow:0 2px 7px #18395320,inset 0 1px 1px #fff;-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);pointer-events:auto;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.scene.touch-layout .touch-entry-tag::after{content:"";position:absolute;inset:-14.5px -7px}
+.scene.touch-layout .touch-entry-arrow{color:#5a7893;font-size:8px;font-weight:400}
+.scene.touch-layout .touch-entry-tag:active{background:#fff;box-shadow:inset 0 1px 4px #50719925}
+.scene.touch-layout .touch-entry-tag:focus-visible{outline:2px solid #164a8b;outline-offset:3px}
+.scene.touch-layout.open.is-settled .item-link{transform:none!important;filter:none!important}
+.scene.touch-layout.open.is-settled .item-link>svg:not(.object-base){opacity:1!important;animation:none!important;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 9px #ffffffed);transition:none}
+.scene.touch-layout .item-label{display:none!important}
+.scene.touch-layout.open.is-settled .glint-sheen{display:none}
+@media(min-width:600px){
+ .scene.touch-layout .touch-entry-tag{min-height:26px;padding:5px 9px;font-size:11.5px;gap:4px}
+ .scene.touch-layout .touch-entry-arrow{font-size:11px}
+ .scene.touch-layout .touch-entry-tag::after{inset:-9px -2px}
+}
