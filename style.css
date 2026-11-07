@@ -64,19 +64,3 @@ main{height:100%;height:100svh}
 .closed-cover:focus-visible{outline:2px solid #244a6c;outline-offset:5px;border-radius:16%}
 .scene:not(.open):not(.is-animating) .composition{visibility:hidden}
 .scene.open ~ .closed-cover,.scene.is-animating ~ .closed-cover{visibility:hidden;pointer-events:none}
-
-/* Keep a stationary open tin flat on touch devices; use 3D only during opening. */
-@media(hover:none),(pointer:coarse){
- .scene.open.is-settled{perspective:none;transform-style:flat}
- .scene.open.is-settled .composition,.scene.open.is-settled .tin-top{transform:none;transform-style:flat;transition:none}
- .scene.open.is-settled .upper{backface-visibility:visible;-webkit-backface-visibility:visible}
- .item-link:is(:hover,:active,.clicked){filter:none;transform:none}
- .item-link:hover svg:not(.object-base){opacity:0}
- .item-link:hover .item-label{opacity:0}
-}
-
-/* A direct Return URL also paints the open tin before the controller downloads. */
-html[data-nova-tin-open] .scene .composition{visibility:visible;transform:translate3d(0,0,0) scale(1);transition:none}
-html[data-nova-tin-open] .scene .tin-top{transform:rotateX(0);transition:none}
-html[data-nova-tin-open] .scene .lower{opacity:1;transition:none}
-html[data-nova-tin-open] .closed-cover{display:none}
