@@ -58,3 +58,37 @@ body.inner-page:before{content:"";position:fixed;inset:0;z-index:-1;background:#
 @media(max-width:480px){.inner-page nav .return-link{min-width:104px;min-height:42px;padding:10px 20px;font-size:14px}}
 @media(prefers-reduced-motion:reduce){.inner-page nav .return-link{transition:none}.inner-page nav .return-link:hover,.inner-page nav .return-link:active{transform:none}}
 @media(max-width:480px){.inner-page nav{width:auto;margin-left:auto;justify-content:flex-end}}
+
+/* Portrait tablets need reading space rather than a short desktop-shaped window. */
+@media(min-width:761px) and (max-width:1180px) and (orientation:portrait){
+ body.inner-page{padding:24px}
+ .inner-page .page-frame{width:calc(100vw - 48px);height:calc(100svh - 48px);aspect-ratio:auto}
+ .page-contact .page-frame>main{gap:30px;padding:36px}
+ .page-books .book-stage{height:clamp(170px,23vw,245px)}
+ .page-portfolio .project{grid-template-columns:1fr;gap:28px}
+ .page-portfolio .project-preview{max-width:660px}
+ .page-portfolio .product-story{grid-column:1}
+}
+@media(max-width:760px),(any-pointer:coarse),(max-width:1180px) and (orientation:portrait){
+ .inner-page .page-frame{backdrop-filter:none;-webkit-backdrop-filter:none}
+ .inner-page .page-frame>main{scroll-padding-bottom:70px;padding-bottom:76px}
+ .inner-page nav .return-link{min-height:46px;touch-action:manipulation}
+ .page-experience .experience-content{zoom:1}
+ .page-experience .controls button{width:44px;height:44px}
+ .page-experience .heading-row{align-items:center;flex-wrap:wrap;gap:16px}
+ .page-experience h1{font-size:30px}
+ .page-experience .experience-card{width:clamp(260px,76vw,340px)}
+ .page-books .insight{font-size:15px;line-height:1.55}
+ .page-contact .contact-item a{overflow-wrap:anywhere;min-height:44px}
+ .page-contact .portrait img{max-height:42svh;object-fit:contain}
+}
+@media(max-height:540px) and (orientation:landscape){
+ body.inner-page{padding:10px}
+ .inner-page .page-frame{width:calc(100vw - 20px);height:calc(100svh - 20px);aspect-ratio:auto}
+ .inner-page .page-frame>.header{min-height:58px;height:58px;padding:6px 22px}
+}
+@media(max-width:380px){
+ .inner-page .page-frame>.header{padding:10px 12px;gap:4px}
+ .inner-page .wordmark{font-size:17px}
+ .inner-page nav .return-link{min-width:88px;padding:10px 14px}
+}

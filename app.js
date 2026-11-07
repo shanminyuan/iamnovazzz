@@ -7,6 +7,7 @@ const topPanel=document.getElementById('tin-top');
 const toggle=document.getElementById('toggle');
 const hotspots=document.getElementById('hotspots');
 const hint=document.getElementById('hint');
+const touchLayout=matchMedia('(any-pointer: coarse)').matches||matchMedia('(max-width: 760px), (max-width:1180px) and (orientation:portrait)').matches;
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let opened=false;
 let request=0;
@@ -46,18 +47,22 @@ for(const button of glintOrder){
  button.addEventListener('focus',()=>button.classList.remove('reveal-glint'));
 }
 // Keep a permanent original cutout above a clean patch, so lifting never reveals a duplicate.
-for(const key of ['experience','reading']){
+for(const key of (touchLayout?[]:['experience','reading'])){
  const button=document.querySelector(`.item-link[data-destination="${key}"]`);
  const highlight=button.querySelector('svg');
  const original=highlight.querySelector('image');
  const base=highlight.cloneNode(false);
  base.classList.add('object-base');base.append(original.cloneNode(true));
+ const baseDefs=highlight.querySelector('defs').cloneNode(true);
+ baseDefs.querySelectorAll('[id]').forEach(node=>{const old=node.id;node.id=old+'-base';if(base.querySelector('image').getAttribute('clip-path')===`url(#${old})`)base.querySelector('image').setAttribute('clip-path',`url(#${node.id})`);});base.prepend(baseDefs);
  button.append(base);button.classList.add('layered-object');
  const patch=highlight.cloneNode(false);patch.classList.add('object-underlay');
  patch.style.cssText=button.style.cssText;
  const background=original.cloneNode(true);
  background.setAttribute('href','assets/tin-clean-underlay.png');
  background.setAttribute('preserveAspectRatio','none');patch.append(background);
+ const patchDefs=highlight.querySelector('defs').cloneNode(true);
+ patchDefs.querySelectorAll('[id]').forEach(node=>{const old=node.id;node.id=old+'-patch';if(background.getAttribute('clip-path')===`url(#${old})`)background.setAttribute('clip-path',`url(#${node.id})`);});patch.prepend(patchDefs);
  document.querySelector(key==='reading'?'.half.upper':'.half.lower').append(patch);
 }
 const cleanPlateReady=new Promise(resolve=>{
@@ -68,16 +73,19 @@ const assetsReady=Promise.all([cleanPlateReady,...['assets/tin-open-v2.png','ass
  const image=new Image();image.src=src;return image.decode().catch(()=>{});
 })]);
 function resize(){
+ if(scene.classList.contains('is-animating'))return;
  const width=document.documentElement.clientWidth||innerWidth;
  const height=document.querySelector('main').clientHeight||innerHeight;
  if(width>0&&height>0)document.documentElement.style.setProperty('--scale',Math.min(width/816,height/974));
 }
 function finishMotion(){
  clearTimeout(settleTimer);scene.classList.remove('is-animating');scene.classList.add('is-settled');
+ toggle.disabled=false;closedCover.disabled=false;lid.disabled=false;resize();
  hotspots.inert=!opened;hint.textContent=opened?'The tin is open':'The tin is closed';
  if(opened&&revealPending){revealPending=false;revealTreasures();}
 }
 async function setOpen(value,{immediate=false}={}){
+ if(!immediate&&(scene.classList.contains('is-animating')||toggle.disabled))return;
  const ticket=++request;
  revealPending=value&&!immediate&&!scene.classList.contains('open');
  clearTreasureGlow();opened=value;clearTimeout(settleTimer);
@@ -88,16 +96,27 @@ async function setOpen(value,{immediate=false}={}){
  toggle.innerHTML=opened?'Close the tin <span>↙</span>':'Tap to open my little world <span>↗</span>';
  hint.textContent=opened?'The tin is opening':'The tin is closing';
  immediate=immediate||reducedMotion.matches;
- if(opened&&!immediate){await assetsReady;if(ticket!==request)return;}
+ if(!immediate){
+  toggle.disabled=true;closedCover.disabled=true;lid.disabled=true;
+  await assetsReady;if(ticket!==request)return;
+ }
  const changed=scene.classList.contains('open')!==opened;
  if(immediate)scene.classList.add('no-motion');
- if(changed&&!immediate)scene.classList.add('is-animating');
+ if(changed&&!immediate){
+  // Paint the hinge in its starting pose before handing off the flat cover.
+  scene.classList.add('is-animating');
+  if(opened)scene.classList.add('is-preparing');
+  void topPanel.getBoundingClientRect();
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  if(ticket!==request)return;
+ }
  scene.classList.toggle('open',opened);
+ scene.classList.remove('is-preparing');
  if(immediate||(!changed&&!scene.classList.contains('is-animating'))){
   finishMotion();requestAnimationFrame(()=>requestAnimationFrame(()=>scene.classList.remove('no-motion')));
  }else{
   // Safety net for a transition cancelled before its first rendered frame.
-  settleTimer=setTimeout(finishMotion,1400);
+  settleTimer=setTimeout(finishMotion,(parseFloat(getComputedStyle(scene).getPropertyValue('--motion-duration'))||1200)+150);
  }
 }
 topPanel.addEventListener('transitionend',event=>{if(event.target===topPanel&&event.propertyName==='transform')finishMotion();});
@@ -111,9 +130,12 @@ addEventListener('pageshow',resize,{signal:pageEvents.signal});
 window.visualViewport?.addEventListener('resize',resize,{signal:pageEvents.signal});
 const sceneSizeObserver=new ResizeObserver(resize);sceneSizeObserver.observe(document.querySelector('main'));resize();
 setOpen(new URLSearchParams(location.search).get('open')==='1',{immediate:true});
+delete document.documentElement.dataset.novaOpen;
+scene.classList.toggle('touch-layout',touchLayout);
 const destinationUrls={experience:'experience.html',portfolio:'portfolio.html',reading:'books.html',contact:'contact.html',interests:'interests.html'};
 document.querySelectorAll('.item-link').forEach(button=>{
- button.addEventListener('click',()=>{const url=destinationUrls[button.dataset.destination];if(url)(window.NovaNavigate?window.NovaNavigate(url):location.assign(url));});
+ button.addEventListener('pointerdown',()=>window.NovaPrefetch?.(destinationUrls[button.dataset.destination]),{passive:true});
+ button.addEventListener('click',()=>{if(scene.classList.contains('is-animating'))return;const url=destinationUrls[button.dataset.destination];if(url)(window.NovaNavigate?window.NovaNavigate(url):location.assign(url));});
 });
 
 window.NovaPage.onCleanup(()=>{sceneSizeObserver.disconnect();pageEvents.abort();++request;clearTimeout(settleTimer);clearTreasureGlow();});

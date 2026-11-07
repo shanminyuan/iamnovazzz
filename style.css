@@ -64,3 +64,29 @@ main{height:100%;height:100svh}
 .closed-cover:focus-visible{outline:2px solid #244a6c;outline-offset:5px;border-radius:16%}
 .scene:not(.open):not(.is-animating) .composition{visibility:hidden}
 .scene.open ~ .closed-cover,.scene.is-animating ~ .closed-cover{visibility:hidden;pointer-events:none}
+
+/* Touch keeps the complete reference image underneath every interactive contour. */
+.scene.touch-layout .object-underlay,.scene.touch-layout .object-base{display:none!important}
+.scene.touch-layout .item-link:hover{transform:none;filter:none}
+.scene.touch-layout .item-link:hover>svg{opacity:0}
+.scene.touch-layout .item-link:hover .item-label{opacity:0}
+.scene.touch-layout.open.is-settled .item-link{pointer-events:auto;touch-action:manipulation}
+.scene.touch-layout .item-link:active>svg{opacity:.55}
+.scene.touch-layout .item-link:active{transform:none;filter:drop-shadow(0 0 6px #fff)}
+.scene.touch-layout{--motion-duration:900ms;--motion-easing:cubic-bezier(.32,0,.2,1)}
+.scene.touch-layout .lower{transition-delay:760ms}
+.scene.touch-layout.open .lower{transition-delay:0ms}
+.scene.touch-layout .hotspots{transition:none}
+.scene.is-animating .hotspots{visibility:hidden}
+.toggle:disabled{cursor:default}
+@media(max-width:760px),(any-pointer:coarse){
+ .toggle{min-height:48px;bottom:max(14px,env(safe-area-inset-bottom));right:max(14px,env(safe-area-inset-right));touch-action:manipulation}
+ .scene{--motion-duration:900ms}
+}
+
+html[data-nova-open="true"] .scene .composition{transform:translate3d(0,0,0) scale(1);visibility:visible;transition:none}
+html[data-nova-open="true"] .scene .tin-top{transform:rotateX(0);transition:none}
+html[data-nova-open="true"] .scene .lower{opacity:1;transition:none}
+html[data-nova-open="true"] .closed-cover{visibility:hidden;pointer-events:none}
+
+.scene.is-preparing ~ .closed-cover{visibility:visible;pointer-events:none}

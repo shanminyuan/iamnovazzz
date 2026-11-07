@@ -80,3 +80,9 @@ button.interest-image{width:100%;position:relative;border:0;padding:0;background
 .interest-item:first-child .reflection-bubble{right:calc(50% + 116px)}
 @container interest-frame (min-width:741px) and (max-width:1000px){.interest-item:first-child .reflection-bubble{width:158px}}
 @container interest-frame (max-width:740px){.interest-item:first-child .reflection-bubble{right:calc(100% + 40px)}}
+
+@container interest-frame (max-width:340px){
+ .interest-item .reflection-bubble{width:calc(100cqw - 180px);min-width:100px;padding:12px 10px}
+ .page-interests .reflection-copy{font-size:11.5px}
+ .interest-item:first-child .reflection-bubble{right:calc(100% + 28px)}
+}

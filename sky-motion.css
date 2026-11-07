@@ -18,3 +18,12 @@ html.persistent-sky{background:#82afe0!important}
 @media(prefers-reduced-motion:reduce){
  .sky,body.inner-page::before,.site-sky{animation:none;transform:none;will-change:auto}
 }
+
+/* Keep navigation controls responsive without browser tap flashes. */
+button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.nova-route-notice{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);z-index:200;width:max-content;max-width:85vw;padding:12px 20px;border:1px solid #fff;border-radius:24px;background:#f5f9ff;color:#164a8b;font:14px/1.5 Arial,sans-serif;box-shadow:0 6px 24px #23486b25}
+body[aria-busy="true"]{cursor:progress}
+@media(max-width:760px),(any-pointer:coarse){
+ .site-music{min-height:46px;min-width:46px}
+ .site-music:hover{transform:none}
+}

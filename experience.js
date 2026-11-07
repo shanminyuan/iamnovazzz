@@ -34,13 +34,15 @@ function measure(){
  if(period&&viewport.scrollLeft>=period)viewport.scrollLeft%=period;
 }
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
-let userPaused=reducedMotion.matches,dragging=false,manualUntil=0,lastFrame=0;
+let userPaused=reducedMotion.matches,dragging=false,touching=false,manualUntil=0,lastFrame=0;
 let autoPosition=0,autoScrolling=false;
 function updateButton(){pauseButton.setAttribute('aria-pressed',String(userPaused));pauseButton.setAttribute('aria-label',userPaused?'Start automatic scrolling':'Pause automatic scrolling');pauseButton.firstElementChild.textContent=userPaused?'▶':'Ⅱ';}
 updateButton();
 pauseButton.addEventListener('click',()=>{userPaused=!userPaused;updateButton();motionStatus.textContent=userPaused?'Automatic scrolling paused':'Automatic scrolling started';});
 viewport.addEventListener('wheel',()=>manualUntil=performance.now()+1800,{passive:true});
-viewport.addEventListener('touchstart',()=>manualUntil=performance.now()+2500,{passive:true});
+viewport.addEventListener('touchstart',()=>{touching=true;},{passive:true});
+viewport.addEventListener('touchend',()=>{touching=false;manualUntil=performance.now()+2500;},{passive:true});
+viewport.addEventListener('touchcancel',()=>{touching=false;manualUntil=performance.now()+2500;},{passive:true});
 function step(direction){
  if(period&&viewport.scrollLeft>=period)viewport.scrollLeft%=period;
  const card=group.firstElementChild;
@@ -65,7 +67,7 @@ const resizeObserver=new ResizeObserver(measure);resizeObserver.observe(viewport
 let animationFrame=0;
 function animate(now){
  const delta=Math.min(now-(lastFrame||now),64);lastFrame=now;
- const canScroll=!userPaused&&!dragging&&!document.hidden&&now>manualUntil&&period;
+ const canScroll=!userPaused&&!dragging&&!touching&&!document.hidden&&now>manualUntil&&period;
  if(canScroll){
   // Keep subpixel progress outside scrollLeft so zoom and fast displays cannot round each step away.
   if(!autoScrolling)autoPosition=viewport.scrollLeft;
